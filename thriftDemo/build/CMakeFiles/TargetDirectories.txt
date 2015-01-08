@@ -1,0 +1,3 @@
+/home/lostaway/workspace/thriftDemo/build/client/CMakeFiles/Client.dir
+/home/lostaway/workspace/thriftDemo/build/server/CMakeFiles/Server.dir
+/home/lostaway/workspace/thriftDemo/build/gen-cpp/CMakeFiles/tutorialgencpp.dir
