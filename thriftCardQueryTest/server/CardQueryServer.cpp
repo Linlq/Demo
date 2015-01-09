@@ -67,24 +67,23 @@ class UvcDccServicesHandler : virtual public UvcDccServicesIf {
     _return.CardAttribute=6;
     _return.VoucherFlow=7;
 
+
     printf("Send response:\n  ResponseSerial = %s\n  RequestSerial = %s\n  \
 ResultCode = %d\n  Result = %d\n  \
 CallingNumber = %s\n  RechargeTime = %s\n  DestAccount = %s\n  \
 DestAttribute = %d\n  \
 VoucherId = %s\n  VoucherPublisher = %s\n  \
-VoucherStatus = %d\n  ProlongDays = %d\n  VoucherValue = %d\n  \
+VoucherStatus = %d\n  VoucherExpireTime = %lld\n  ProlongDays = %d\n  VoucherValue = %d\n  \
 BatchNumber = %s\n  \
 VoucherType = %d\n  AccessType = %d\n  \
 ServiceFlowId = %s\n  \
-CardAttribute = %d\n  VoucherFlow = %d\n",
+CardAttribute = %d\n  VoucherFlow = %lld\n",
 			_return.ResponseSerial.c_str(),_return.RequestSerial.c_str(),
 			_return.ResultCode,_return.Result,
 			_return.CallingNumber.c_str(),_return.RechargeTime.c_str(),_return.DestAccount.c_str(),
 			_return.DestAttribute,
 			_return.VoucherId.c_str(),_return.VoucherPublisher.c_str(),
-			_return.VoucherStatus,
-			_return.ProlongDays,
-			_return.VoucherValue,
+			_return.VoucherStatus,_return.VoucherExpireTime,_return.ProlongDays,_return.VoucherValue,
 			_return.BatchNumber.c_str(),
 			_return.VoucherType,_return.AccessType,
 			_return.ServiceFlowId.c_str(),

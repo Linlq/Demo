@@ -67,11 +67,11 @@ ResultCode = %d\n  Result = %d\n  \
 CallingNumber = %s\n  RechargeTime = %s\n  DestAccount = %s\n  \
 DestAttribute = %d\n  \
 VoucherId = %s\n  VoucherPublisher = %s\n  \
-VoucherStatus = %d\n  VoucherExpireTime = %ld\n  ProlongDays = %d\n  VoucherValue = %d\n  \
+VoucherStatus = %d\n  VoucherExpireTime = %lld\n  ProlongDays = %d\n  VoucherValue = %d\n  \
 BatchNumber = %s\n  \
 VoucherType = %d\n  AccessType = %d\n  \
 ServiceFlowId = %s\n  \
-CardAttribute = %d\n  VoucherFlow = %d\n",
+CardAttribute = %d\n  VoucherFlow = %lld\n",
     		response.ResponseSerial.c_str(),response.RequestSerial.c_str(),
 			response.ResultCode,response.Result,
 			response.CallingNumber.c_str(),response.RechargeTime.c_str(),response.DestAccount.c_str(),
