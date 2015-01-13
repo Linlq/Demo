@@ -59,10 +59,6 @@ void my_ping_pong(UvcDccServicesCobClient* client)
 }
 
 int main(int argc, char** argv) {
-//  shared_ptr<TTransport> socket(new TSocket("localhost", 9090));
-//  shared_ptr<TTransport> transport(new TFramedTransport(socket));
-//  shared_ptr<TProtocolFactory> protocol(new TBinaryProtocol(transport));
-//  UvcDccServicesClient client(protocol);
 try {
   //async
 	event_base* evbase = event_base_new();

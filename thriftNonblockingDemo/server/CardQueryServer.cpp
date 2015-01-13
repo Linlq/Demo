@@ -18,6 +18,10 @@
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TTransportUtils.h>
 
+#include <thrift/async/TAsyncProtocolProcessor.h>
+#include <thrift/async/TEvhttpServer.h>
+#include <thrift/async/TEvhttpClientChannel.h>
+
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
@@ -32,6 +36,19 @@ using namespace apache::thrift::concurrency;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
 using namespace apache::thrift::server;
+using namespace apache::thrift::async;
+
+using apache::thrift::TException;
+using apache::thrift::protocol::TBinaryProtocolFactory;
+using apache::thrift::protocol::TProtocolFactory;
+using apache::thrift::async::TEvhttpServer;
+using apache::thrift::async::TAsyncProcessor;
+using apache::thrift::async::TAsyncBufferProcessor;
+using apache::thrift::async::TAsyncProtocolProcessor;
+using apache::thrift::async::TAsyncChannel;
+using apache::thrift::async::TEvhttpClientChannel;
+
+
 using namespace  ::UvcDccServices;
 
 using namespace boost;
@@ -96,22 +113,37 @@ CardAttribute = %d\n  VoucherFlow = %lld\n",
 
 };
 
+class UvcDccServicesAsyncHandler : public UvcDccServicesCobSvIf {
+ public:
+  UvcDccServicesAsyncHandler() {
+    syncHandler_ = std::auto_ptr<UvcDccServicesHandler>(new UvcDccServicesHandler);
+    // Your initialization goes here
+  }
+
+  void CardQuery(tcxx::function<void(CardQueryResponse const& _return)> cob, const CardQueryRequest& request) {
+    CardQueryResponse _return;
+    syncHandler_->CardQuery(_return, request);
+    return cob(_return);
+  }
+
+ protected:
+  std::auto_ptr<UvcDccServicesHandler> syncHandler_;
+};
+
+
 int main(int argc, char **argv) {
-	// Nonblocking server
-	shared_ptr<UvcDccServicesHandler> handler(new UvcDccServicesHandler());
-	shared_ptr<TProcessor> processor(new UvcDccServicesProcessor(handler));
 
-	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+	//async server
+	  boost::shared_ptr<UvcDccServicesAsyncHandler> handler(new UvcDccServicesAsyncHandler());
+	  boost::shared_ptr<TAsyncProcessor> proc(new UvcDccServicesAsyncProcessor(handler));
+	  boost::shared_ptr<TProtocolFactory> pfact(new TBinaryProtocolFactory());
+	  boost::shared_ptr<TAsyncBufferProcessor> bufproc(new TAsyncProtocolProcessor(proc, pfact));
+	  boost::shared_ptr<TEvhttpServer> server(new TEvhttpServer(bufproc, 9090));
+	//  handler->setEventBase(server->getEventBase());
+	  printf("Starting the server...\n");
+	  server->serve();
+	  printf("done..\n");
+	  return 0;
 
-	shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(boost::thread::hardware_concurrency());
-	shared_ptr<PosixThreadFactory> threadFactory(new PosixThreadFactory());
-	threadManager->threadFactory(threadFactory);
-	threadManager->start();
 
-	TNonblockingServer server(processor, protocolFactory, 9090, threadManager);
-
-	printf("Starting the server...\n");
-	server.serve();
-	printf("done..\n");
-  	return 0;
 }
