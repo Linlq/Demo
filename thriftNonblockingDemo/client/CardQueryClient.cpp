@@ -13,7 +13,7 @@
 #include <event.h>
 #include <boost/bind.hpp>
 
-#include <thrift/protocol/TBinaryProtocol.h>
+#include <thrift/protocol/TJSONProtocol.h>
 #include <thrift/transport/TSocket.h>
 #include <thrift/transport/TTransportUtils.h>
 #include <thrift/async/TEvhttpClientChannel.h>
@@ -62,8 +62,8 @@ int main(int argc, char** argv) {
 try {
   //async
 	event_base* evbase = event_base_new();
-    boost::shared_ptr<TAsyncChannel> channel(new TEvhttpClientChannel("localhost", "/", "localhost", 9090, evbase));
-    UvcDccServicesCobClient client(channel, new TBinaryProtocolFactory());
+    boost::shared_ptr<TAsyncChannel> channel(new TEvhttpClientChannel("localhost", "/", "localhost", 9091, evbase));
+    UvcDccServicesCobClient client(channel, new TJSONProtocolFactory());
 
     tcxx::function<void(UvcDccServicesCobClient* client)> cob = bind(&my_ping_pong,_1);
 

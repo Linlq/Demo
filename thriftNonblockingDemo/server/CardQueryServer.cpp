@@ -10,7 +10,7 @@
 
 #include <thrift/concurrency/ThreadManager.h>
 #include <thrift/concurrency/PosixThreadFactory.h>
-#include <thrift/protocol/TBinaryProtocol.h>
+#include <thrift/protocol/TJSONProtocol.h>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/server/TThreadPoolServer.h>
 #include <thrift/server/TThreadedServer.h>
@@ -89,7 +89,7 @@ class UvcDccServicesHandler : virtual public UvcDccServicesIf {
     _return.VoucherFlow=7;
 
 
-    printf("Send response:\n  ResponseSerial = %s\n  RequestSerial = %s\n  \
+    printf("[%d] Send response:\n  ResponseSerial = %s\n  RequestSerial = %s\n  \
 ResultCode = %d\n  Result = %d\n  \
 CallingNumber = %s\n  RechargeTime = %s\n  DestAccount = %s\n  \
 DestAttribute = %d\n  \
@@ -99,6 +99,7 @@ BatchNumber = %s\n  \
 VoucherType = %d\n  AccessType = %d\n  \
 ServiceFlowId = %s\n  \
 CardAttribute = %d\n  VoucherFlow = %lld\n",
+		   (int)time(NULL),
 			_return.ResponseSerial.c_str(),_return.RequestSerial.c_str(),
 			_return.ResultCode,_return.Result,
 			_return.CallingNumber.c_str(),_return.RechargeTime.c_str(),_return.DestAccount.c_str(),
@@ -136,11 +137,11 @@ int main(int argc, char **argv) {
 	//async server
 	  boost::shared_ptr<UvcDccServicesAsyncHandler> handler(new UvcDccServicesAsyncHandler());
 	  boost::shared_ptr<TAsyncProcessor> proc(new UvcDccServicesAsyncProcessor(handler));
-	  boost::shared_ptr<TProtocolFactory> pfact(new TBinaryProtocolFactory());
+	  boost::shared_ptr<TProtocolFactory> pfact(new TJSONProtocolFactory());
 	  boost::shared_ptr<TAsyncBufferProcessor> bufproc(new TAsyncProtocolProcessor(proc, pfact));
-	  boost::shared_ptr<TEvhttpServer> server(new TEvhttpServer(bufproc, 9090));
+	  boost::shared_ptr<TEvhttpServer> server(new TEvhttpServer(bufproc, 9091));
 	//  handler->setEventBase(server->getEventBase());
-	  printf("Starting the server...\n");
+	  printf("[%d] Starting the server...\n",(int)time(NULL));
 	  server->serve();
 	  printf("done..\n");
 	  return 0;
