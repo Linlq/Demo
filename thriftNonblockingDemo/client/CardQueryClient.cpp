@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 try {
   //async
 	event_base* evbase = event_base_new();
-    boost::shared_ptr<TAsyncChannel> channel(new TEvhttpClientChannel("localhost", "/", "localhost", 9091, evbase));
+    boost::shared_ptr<TAsyncChannel> channel(new TEvhttpClientChannel("localhost", "/thriftDemo/cardQuery", "localhost", 9192, evbase));
     UvcDccServicesCobClient client(channel, new TJSONProtocolFactory());
 
     tcxx::function<void(UvcDccServicesCobClient* client)> cob = bind(&my_ping_pong,_1);
