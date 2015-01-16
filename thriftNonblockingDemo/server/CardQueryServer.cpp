@@ -68,7 +68,7 @@ class UvcDccServicesHandler : virtual public UvcDccServicesIf {
     	    request.ServiceFlowId.c_str());
 
     _return.ResponseSerial="ResponseSerial";
-    _return.RequestSerial="RequestSerial";
+    _return.RequestSerial=request.RequestSerial;
     _return.ResultCode = 2001;
     _return.Result=0;
     _return.CallingNumber="CallingNumber";
@@ -118,7 +118,6 @@ class UvcDccServicesAsyncHandler : public UvcDccServicesCobSvIf {
  public:
   UvcDccServicesAsyncHandler() {
     syncHandler_ = std::auto_ptr<UvcDccServicesHandler>(new UvcDccServicesHandler);
-    // Your initialization goes here
   }
 
   void CardQuery(tcxx::function<void(CardQueryResponse const& _return)> cob, const CardQueryRequest& request) {
@@ -133,18 +132,15 @@ class UvcDccServicesAsyncHandler : public UvcDccServicesCobSvIf {
 
 
 int main(int argc, char **argv) {
-
 	//async server
-	  boost::shared_ptr<UvcDccServicesAsyncHandler> handler(new UvcDccServicesAsyncHandler());
-	  boost::shared_ptr<TAsyncProcessor> proc(new UvcDccServicesAsyncProcessor(handler));
-	  boost::shared_ptr<TProtocolFactory> pfact(new TJSONProtocolFactory());
-	  boost::shared_ptr<TAsyncBufferProcessor> bufproc(new TAsyncProtocolProcessor(proc, pfact));
-	  boost::shared_ptr<TEvhttpServer> server(new TEvhttpServer(bufproc, 9091));
+	boost::shared_ptr<UvcDccServicesAsyncHandler> handler(new UvcDccServicesAsyncHandler());
+	boost::shared_ptr<TAsyncProcessor> proc(new UvcDccServicesAsyncProcessor(handler));
+	boost::shared_ptr<TProtocolFactory> pfact(new TJSONProtocolFactory());
+	boost::shared_ptr<TAsyncBufferProcessor> bufproc(new TAsyncProtocolProcessor(proc, pfact));
+	boost::shared_ptr<TEvhttpServer> server(new TEvhttpServer(bufproc, 9091));
 	//  handler->setEventBase(server->getEventBase());
-	  printf("[%d] Starting the server...\n",(int)time(NULL));
-	  server->serve();
-	  printf("done..\n");
-	  return 0;
-
-
+	printf("[%d] Starting the server...\n",(int)time(NULL));
+	server->serve();
+	printf("done..\n");
+	return 0;
 }
