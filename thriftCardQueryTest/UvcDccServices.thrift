@@ -1,15 +1,16 @@
 namespace cpp UvcDccServices
 namespace java UvcDccServices
 
-struct CardQueryRequest {
+struct CardQueryReqInfo {
   1: string RequestSource,
   2: string RequestUser,
   3: string RequestSerial,
   4: string VoucherId,
-  5: string ServiceFlowId
+  5: string ServiceFlowId,
+  6: string SessionId
 }
 
-struct CardQueryResponse {
+struct CardQueryRespInfo {
   1: string ResponseSerial,
   2: string RequestSerial,
   3: i32 ResultCode,
@@ -29,10 +30,12 @@ struct CardQueryResponse {
   17: i32 AccessType,
   18: string ServiceFlowId,
   19: i32 CardAttribute,
-  20: i64 VoucherFlow
+  20: i64 VoucherFlow,
+  21: string SessionId
 }
 
 service UvcDccServices {
-  CardQueryResponse CardQuery(1:CardQueryRequest request)
+  i32 CardQueryRequest(1:CardQueryReqInfo request)
+  i32 CardQueryResponse(1:CardQueryRespInfo response)
 }
 

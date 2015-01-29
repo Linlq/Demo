@@ -21,7 +21,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-#include <thrift/protocol/TBinaryProtocol.h>
+#include <thrift/protocol/TJSONProtocol.h>
 #include <thrift/transport/TSocket.h>
 #include <thrift/transport/TTransportUtils.h>
 
@@ -37,15 +37,14 @@ using namespace boost;
 using namespace  ::UvcDccServices;
 
 int main(int argc, char** argv) {
-  shared_ptr<TTransport> socket(new TSocket("localhost", 9090));
+  shared_ptr<TTransport> socket(new TSocket("localhost", 17972));
   shared_ptr<TTransport> transport(new TBufferedTransport(socket));
-  shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+  shared_ptr<TProtocol> protocol(new TJSONProtocol(transport));
   UvcDccServicesClient client(protocol);
 
   try {
     transport->open();
-    CardQueryResponse response;
-    CardQueryRequest request;
+    CardQueryReqInfo request;
 
     request.RequestSource="RequestSource";
     request.RequestUser="RequestUser";
@@ -60,28 +59,9 @@ int main(int argc, char** argv) {
     	    request.VoucherId.c_str(),
     	    request.ServiceFlowId.c_str());
 
-    client.CardQuery(response, request);
+    int result = client.CardQueryRequest(request);
 
-    printf("Receive response:\n  ResponseSerial = %s\n  RequestSerial = %s\n  \
-ResultCode = %d\n  Result = %d\n  \
-CallingNumber = %s\n  RechargeTime = %s\n  DestAccount = %s\n  \
-DestAttribute = %d\n  \
-VoucherId = %s\n  VoucherPublisher = %s\n  \
-VoucherStatus = %d\n  VoucherExpireTime = %lld\n  ProlongDays = %d\n  VoucherValue = %d\n  \
-BatchNumber = %s\n  \
-VoucherType = %d\n  AccessType = %d\n  \
-ServiceFlowId = %s\n  \
-CardAttribute = %d\n  VoucherFlow = %lld\n",
-    		response.ResponseSerial.c_str(),response.RequestSerial.c_str(),
-			response.ResultCode,response.Result,
-			response.CallingNumber.c_str(),response.RechargeTime.c_str(),response.DestAccount.c_str(),
-			response.DestAttribute,
-			response.VoucherId.c_str(),response.VoucherPublisher.c_str(),
-			response.VoucherStatus,response.VoucherExpireTime,response.ProlongDays,response.VoucherValue,
-			response.BatchNumber.c_str(),
-			response.VoucherType,response.AccessType,
-			response.ServiceFlowId.c_str(),
-			response.CardAttribute,response.VoucherFlow);
+    printf("Receive response: result = %d.\n",result);
 
     transport->close();
   } catch (TException &tx) {

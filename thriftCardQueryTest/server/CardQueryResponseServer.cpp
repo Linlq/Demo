@@ -9,7 +9,7 @@
 
 #include <thrift/concurrency/ThreadManager.h>
 #include <thrift/concurrency/PosixThreadFactory.h>
-#include <thrift/protocol/TBinaryProtocol.h>
+#include <thrift/protocol/TJSONProtocol.h>
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/server/TThreadPoolServer.h>
 #include <thrift/server/TThreadedServer.h>
@@ -38,37 +38,9 @@ class UvcDccServicesHandler : virtual public UvcDccServicesIf {
     // Your initialization goes here
   }
 
-  void CardQuery(CardQueryResponse& _return, const CardQueryRequest& request) {
-    printf("Receive CardQuery Request:\n  %s\n  %s\n  %s\n  %s\n  %s\n\n",
-    	    request.RequestSource.c_str(),
-    	    request.RequestUser.c_str(),
-    	    request.RequestSerial.c_str(),
-    	    request.VoucherId.c_str(),
-    	    request.ServiceFlowId.c_str());
-
-    _return.ResponseSerial="ResponseSerial";
-    _return.RequestSerial="RequestSerial";
-    _return.ResultCode = 2001;
-    _return.Result=0;
-    _return.CallingNumber="CallingNumber";
-    _return.RechargeTime="RechargeTime";
-    _return.DestAccount="DestAccount";
-    _return.DestAttribute=1111;
-    _return.VoucherId="VoucherId";
-    _return.VoucherPublisher="VoucherPublisher";
-    _return.VoucherStatus=1;
-    _return.VoucherExpireTime=20150108;
-    _return.ProlongDays=2;
-    _return.VoucherValue=3;
-    _return.BatchNumber="BatchNumber";
-    _return.VoucherType=4;
-    _return.AccessType=5;
-    _return.ServiceFlowId="ServiceFlowId";
-    _return.CardAttribute=6;
-    _return.VoucherFlow=7;
-
-
-    printf("Send response:\n  ResponseSerial = %s\n  RequestSerial = %s\n  \
+  int32_t CardQueryResponse(const CardQueryRespInfo& response)
+  {
+	    printf("Receive CardQUery Response:\n  ResponseSerial = %s\n  RequestSerial = %s\n  \
 ResultCode = %d\n  Result = %d\n  \
 CallingNumber = %s\n  RechargeTime = %s\n  DestAccount = %s\n  \
 DestAttribute = %d\n  \
@@ -78,16 +50,23 @@ BatchNumber = %s\n  \
 VoucherType = %d\n  AccessType = %d\n  \
 ServiceFlowId = %s\n  \
 CardAttribute = %d\n  VoucherFlow = %lld\n",
-			_return.ResponseSerial.c_str(),_return.RequestSerial.c_str(),
-			_return.ResultCode,_return.Result,
-			_return.CallingNumber.c_str(),_return.RechargeTime.c_str(),_return.DestAccount.c_str(),
-			_return.DestAttribute,
-			_return.VoucherId.c_str(),_return.VoucherPublisher.c_str(),
-			_return.VoucherStatus,_return.VoucherExpireTime,_return.ProlongDays,_return.VoucherValue,
-			_return.BatchNumber.c_str(),
-			_return.VoucherType,_return.AccessType,
-			_return.ServiceFlowId.c_str(),
-			_return.CardAttribute,_return.VoucherFlow);
+				response.ResponseSerial.c_str(),response.RequestSerial.c_str(),
+				response.ResultCode,response.Result,
+				response.CallingNumber.c_str(),response.RechargeTime.c_str(),
+				response.DestAccount.c_str(), response.DestAttribute,
+				response.VoucherId.c_str(),response.VoucherPublisher.c_str(),
+				response.VoucherStatus,response.VoucherExpireTime,response.ProlongDays,
+				response.VoucherValue, response.BatchNumber.c_str(),
+				response.VoucherType,response.AccessType,
+				response.ServiceFlowId.c_str(),
+				response.CardAttribute,response.VoucherFlow);
+
+	    return (0);
+  }
+
+  int32_t CardQueryRequest(const CardQueryReqInfo& request)
+  {
+	  return (0);
   }
 
 };
@@ -98,7 +77,7 @@ int main(int argc, char **argv) {
   shared_ptr<TProcessor> processor(new UvcDccServicesProcessor(handler));
   shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
   shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
-  shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+  shared_ptr<TProtocolFactory> protocolFactory(new TJSONProtocolFactory());
 
   TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
   server.serve();
