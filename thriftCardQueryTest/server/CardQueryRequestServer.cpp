@@ -32,6 +32,7 @@ using namespace apache::thrift;
 using namespace apache::thrift::protocol;
 using namespace apache::thrift::transport;
 using namespace apache::thrift::server;
+using namespace apache::thrift::concurrency;
 
 using namespace boost;
 
@@ -84,8 +85,15 @@ int main(int argc, char **argv)
 	shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
 	shared_ptr<TProtocolFactory> protocolFactory(new TJSONProtocolFactory());
 
-	TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
-	boost::thread serverThread(boost::bind(&TSimpleServer::serve, server));
+	shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(3);
+	shared_ptr<PosixThreadFactory> threadFactory =
+	shared_ptr<PosixThreadFactory>(new PosixThreadFactory());
+	threadManager->threadFactory(threadFactory);
+	threadManager->start();
+
+//	TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
+	TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
+	boost::thread serverThread(boost::bind(&TThreadPoolServer::serve, server));
 
 
 	// Client
