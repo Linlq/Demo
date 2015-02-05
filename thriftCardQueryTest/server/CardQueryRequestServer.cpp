@@ -37,6 +37,7 @@ using namespace apache::thrift::concurrency;
 using namespace boost;
 
 shared_ptr<UvcDccServicesClient> g_spCli;
+boost::mutex g_cCliMutex;
 
 class UvcDccServicesHandler : virtual public UvcDccServicesIf {
  public:
@@ -67,8 +68,12 @@ class UvcDccServicesHandler : virtual public UvcDccServicesIf {
 	  resp.Result = 0;
 	  resp.ServiceFlowId = request.ServiceFlowId;
 	  resp.SessionId = request.SessionId;
-	  int result = g_spCli->CardQueryResponse(resp);
-	  printf("Send CardQuery Response: result = %d.\n", result);
+	  do
+	  {
+		  boost::unique_lock<boost::mutex> cGuard(g_cCliMutex);
+		  int result = g_spCli->CardQueryResponse(resp);
+		  printf("Send CardQuery Response: result = %d.\n", result);
+	  }while(false);
 
 	  return (0);
   }
